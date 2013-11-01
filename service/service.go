@@ -1,24 +1,17 @@
 package main
 
 import (
+    "net/http"
     "code.google.com/p/gorest"
-        "net/http"
 )
-func main() {
-    gorest.RegisterService(new(HelloService)) //Register our service
-    http.Handle("/",gorest.Handle())    
-    http.ListenAndServe(":8787",nil)
+
+type GottfriedService struct {
+    gorest.RestService `root:"/gottfried/api/v1/"`
+    s3List gorest.EndPoint `method:"GET" path:"/s3/list/{bucket:string}" output:"string"`
 }
 
-//Service Definition
-type HelloService struct {
-    gorest.RestService `root:"/tutorial/"`
-    helloWorld  gorest.EndPoint `method:"GET" path:"/hello-world/" output:"string"`
-    sayHello    gorest.EndPoint `method:"GET" path:"/hello/{name:string}" output:"string"`
-}
-func(serv HelloService) HelloWorld() string{
-    return "Hello World"
-}
-func(serv HelloService) SayHello(name string) string{
-    return "Hello " + name
+func main() {
+    gorest.RegisterService(new(GottfriedService))
+    http.Handle("/",gorest.Handle())    
+    http.ListenAndServe(":8000",nil)
 }
