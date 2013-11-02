@@ -1,5 +1,5 @@
 package common
 
-type S3ListResult struct{
+type S3ListResult struct {
 	List []string
 }

@@ -2,17 +2,17 @@ package main
 
 import (
 	"errors"
+	"github.com/csizsek/gottfried/common"
+	"launchpad.net/goamz/aws"
+	"launchpad.net/goamz/s3"
 	"log"
 	"net"
 	"net/http"
 	"net/rpc"
 	"os"
-	"github.com/csizsek/gottfried/common"
-	"launchpad.net/goamz/aws"
-	"launchpad.net/goamz/s3"
 )
 
-type S3Operation struct {}
+type S3Operation struct{}
 
 func (o *S3Operation) S3List(args *common.S3ListArgs, reply *common.S3ListResult) error {
 	log.Printf("S3List bucket: %s", args.Bucket)
