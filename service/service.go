@@ -28,6 +28,7 @@ type GottfriedService struct {
 }
 
 func main() {
+	log.SetPrefix("Gottfried Service ")
 	configFile := flag.String("conf", "service.cfg", "The name of the service configuration file")
 	flag.Parse()
 	err := gcfg.ReadFileInto(&CFG, *configFile)

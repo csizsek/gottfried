@@ -51,6 +51,7 @@ func (o *S3Operation) S3List(args *common.S3ListArgs, reply *common.S3ListResult
 }
 
 func main() {
+	log.SetPrefix("Gottfried Worker ")
 	configFile := flag.String("conf", "worker.cfg", "The name of the worker configuration file")
 	flag.Parse()
 	var cfg WorkerConfig
