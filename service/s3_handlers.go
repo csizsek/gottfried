@@ -7,9 +7,9 @@ import (
 	"net/rpc"
 )
 
-func (serv GottfriedService) S3List(bucket string) string {
+func (service GottfriedService) S3List(bucket string) string {
 	log.Printf("S3List bucket: %s\n", bucket)
-	client, err := rpc.DialHTTP("tcp", "localhost:8001")
+	client, err := rpc.DialHTTP(CFG.RPC.Protocol, CFG.RPC.Host + CFG.RPC.Port)
 	if err != nil {
 		log.Fatal("Unable to connect to RPC server\n" + err.Error())
 	}

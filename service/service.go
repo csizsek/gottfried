@@ -1,9 +1,25 @@
 package main
 
 import (
+	"code.google.com/p/gcfg"
 	"code.google.com/p/gorest"
+	"flag"
+	"log"
 	"net/http"
 )
+
+type ServiceConfig struct {
+	RPC struct {
+		Protocol string
+		Host string
+		Port string
+	}
+	HTTP struct {
+		Port string
+	}
+}
+
+var CFG ServiceConfig
 
 type GottfriedService struct {
 	gorest.RestService `root:"/gottfried/api/v1/"`
@@ -12,7 +28,14 @@ type GottfriedService struct {
 }
 
 func main() {
-	gorest.RegisterService(new(GottfriedService))
+	configFile := flag.String("conf", "service.cfg", "The name of the service configuration file")
+	flag.Parse()
+	err := gcfg.ReadFileInto(&CFG, *configFile)
+	if err != nil {
+		log.Fatal("Unable to load configuration file: " + *configFile + "\n" + err.Error())
+	}
+	service := new(GottfriedService)
+	gorest.RegisterService(service)
 	http.Handle("/", gorest.Handle())
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe(CFG.HTTP.Port, nil)
 }
