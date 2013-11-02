@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"github.com/csizsek/gottfried/common"
 	"launchpad.net/goamz/aws"
 	"launchpad.net/goamz/s3"
@@ -10,7 +11,15 @@ import (
 	"net/http"
 	"net/rpc"
 	"os"
+	"code.google.com/p/gcfg"
 )
+
+type WorkerConfig struct {
+	RPC struct {
+		Protocol string
+		Port string
+	}
+}
 
 type S3Operation struct{}
 
@@ -42,10 +51,17 @@ func (o *S3Operation) S3List(args *common.S3ListArgs, reply *common.S3ListResult
 }
 
 func main() {
+	configFile := flag.String("conf", "worker.cfg", "The name of the worker configuration file")
+	flag.Parse()
+	var cfg WorkerConfig
+	err := gcfg.ReadFileInto(&cfg, *configFile)
+	if err != nil {
+		log.Fatal("Unable to load configuration file: " + *configFile + "\n" + err.Error())
+	}
 	s3Op := new(S3Operation)
 	rpc.Register(s3Op)
 	rpc.HandleHTTP()
-	l, err := net.Listen("tcp", ":8001")
+	l, err := net.Listen(cfg.RPC.Protocol, cfg.RPC.Port)
 	if err != nil {
 		log.Fatal("Unable to listen\n" + err.Error())
 	}
