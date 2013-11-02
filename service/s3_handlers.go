@@ -12,7 +12,7 @@ func(serv GottfriedService) S3List(bucket string) string {
     if err != nil {
     	log.Fatal("Unable to connect to RPC server\n" + err.Error())
     }
-    args := common.ListArgs{Bucket: bucket}
+    args := common.S3ListArgs{Bucket: bucket}
     reply := ""
     err = client.Call("S3Operation.S3List", args, &reply)
     if err != nil {
