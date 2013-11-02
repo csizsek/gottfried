@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"log"
 	"net"
@@ -15,9 +14,9 @@ import (
 
 type S3Operation struct {}
 
-func (o *S3Operation) S3List(args *common.S3ListArgs, reply *string) error {
+func (o *S3Operation) S3List(args *common.S3ListArgs, reply *common.S3ListResult) error {
 	log.Printf("S3List bucket: %s", args.Bucket)
-	*reply = ""
+	*reply = common.S3ListResult{}
 	aws_access_key := os.Getenv("AWS_ACCESS_KEY_ID")
 	if aws_access_key == "" {
 		log.Fatal("Environment variable AWS_ACCESS_KEY_ID is not set")
@@ -30,19 +29,15 @@ func (o *S3Operation) S3List(args *common.S3ListArgs, reply *string) error {
 	region := aws.USEast
 	s3 := s3.New(auth, region)
 	bucket := s3.Bucket(args.Bucket)
-	list, err := bucket.List("", ",", "", 10)
+	list, err := bucket.List("", ",", "", 5)
 	if err != nil {
 		return errors.New("Unable to list bucket\n" + err.Error())
 	}
-	files := make([]string, 10)
+	files := make([]string, len(list.Contents))
 	for i, k := range list.Contents {
 		files[i] = k.Key
 	}
-	res, err := json.Marshal(files)
-	if err != nil {
-		return errors.New("Unable to json marshal file list\n" + err.Error())
-	}
-	*reply = string(res)
+	reply.List = files
 	return nil
 }
 
