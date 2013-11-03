@@ -24,7 +24,7 @@ var CFG ServiceConfig
 type GottfriedService struct {
 	gorest.RestService `root:"/gottfried/api/v1/"`
 	s3List             gorest.EndPoint `method:"GET" path:"/s3/list/{bucket:string}" output:"string"`
-	//s3Store gorest.EndPoint `method:"POST" path:"/s3/store/{bucket:string}/{file:string}" postdata:"string"`
+	dBStore            gorest.EndPoint `method:"POST" path:"/db/store" postdata:"string"`
 }
 
 func main() {
@@ -38,5 +38,7 @@ func main() {
 	service := new(GottfriedService)
 	gorest.RegisterService(service)
 	http.Handle("/", gorest.Handle())
+	log.Println("Service started. Listening for HTTP calls on port " + CFG.HTTP.Port)
+	log.Println("Press CTRL+C to stop the service process")
 	http.ListenAndServe(CFG.HTTP.Port, nil)
 }
